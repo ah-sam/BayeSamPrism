@@ -107,8 +107,13 @@ run.prism <- function(prism,
 	jointPost.ini.ct <- mergeK(jointPost.obj = jointPost.ini.cs, 
 					   		   			 map = prism@map)
 
+<<<<<<< HEAD
     if(!update.gibbs) #only do initial Gibbs sampling
         bp.obj <- new("BayesPrism",
+=======
+	if(!update.gibbs) #only do initial Gibbs sampling
+		bp.obj <- new("BayesSamPrism",
+>>>>>>> e6d424b41f32331abe29f6bb3b7cd59a3b97ed77
 		 				prism = prism,
          				posterior.initial.cellState = jointPost.ini.cs,
          				posterior.initial.cellType = jointPost.ini.ct,
@@ -132,7 +137,11 @@ run.prism <- function(prism,
 		theta_f <- run.gibbs(gibbsSampler.update, 
 							 final=TRUE)
 		
+<<<<<<< HEAD
         bp.obj <- new("BayesPrism",
+=======
+		bp.obj <- new("BayesSamPrism",
+>>>>>>> e6d424b41f32331abe29f6bb3b7cd59a3b97ed77
 		 				prism = prism,
          				posterior.initial.cellState = jointPost.ini.cs,
          				posterior.initial.cellType = jointPost.ini.ct,
@@ -198,6 +207,7 @@ update.theta <- function(bp,
 		
 	theta_f <- run.gibbs(gibbsSampler.update, final=TRUE)
 		
+<<<<<<< HEAD
 	bp.updated <- new("BayesPrism",
 	 			prism = bp@prism,
 	        		posterior.initial.cellState = bp@posterior.initial.cellState,
@@ -208,6 +218,18 @@ update.theta <- function(bp,
 	        					 opt.control = opt.control,
 	        					 update.gibbs = TRUE)
 	        	 )
+=======
+	bp.updated <- new("BayesSamPrism",
+		 				prism = bp@prism,
+         				posterior.initial.cellState = bp@posterior.initial.cellState,
+         				posterior.initial.cellType = bp@posterior.initial.cellType,
+         				reference.update = psi,
+         				posterior.theta_f = theta_f,
+         				control_param = list(gibbs.control = gibbs.control, 
+         									 opt.control = opt.control,
+         									 update.gibbs = TRUE)
+         			 )
+>>>>>>> e6d424b41f32331abe29f6bb3b7cd59a3b97ed77
        
 	return(bp.updated) 
 	
