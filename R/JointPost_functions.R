@@ -23,6 +23,11 @@ newJointPost <- function(bulkID,
 	Z <- array(NA, 
 			   dim = c(N,G,K),
 			   dimnames=list(bulkID, geneID, cellType))
+
+	# store CV for Z (coefficient of variation) — ensure present with same dims
+	Z.cv <- array(NA,
+			   dim = c(N,G,K),
+			   dimnames=list(bulkID, geneID, cellType))
 	
 	theta <- matrix(NA, 
 					nrow = N, ncol= K, 
@@ -36,7 +41,12 @@ newJointPost <- function(bulkID,
 		Z[n,,] <- gibbs.list[[n]]$Z_n
 		theta[n,] <- gibbs.list[[n]]$theta_n
 	}
-	
+
+	# populate Z.cv if available in gibbs.list entries, otherwise leave NA
+	if(!is.null(gibbs.list[[1]]$Z.cv_n)){
+		for (n in 1:N) Z.cv[n,,] <- gibbs.list[[n]]$Z.cv_n
+	}
+
 	if(!is.null(gibbs.list[[1]]$theta.cv_n)){
 		for (n in 1:N) theta.cv[n,] <- gibbs.list[[n]]$theta.cv_n
 	}
@@ -44,7 +54,7 @@ newJointPost <- function(bulkID,
 	
 	constant <- sum(unlist(lapply(gibbs.list, '[[', "gibbs.constant")))
 	 
-	new("jointPost", Z = Z, theta = theta, theta.cv = theta.cv, constant = constant)
+	new("jointPost", Z = Z, Z.cv = Z.cv, theta = theta, theta.cv = theta.cv, constant = constant)
 }
 
 
@@ -109,6 +119,11 @@ mergeK <- function(jointPost.obj,
 	theta <- matrix(NA, 
 					nrow = N, ncol= K_merged, 
 					dimnames = list(bulkID, cellType.merged))
+
+	# prepare Z.cv for merged results (same dims as Z)
+	Z.cv <- array(NA,
+			   dim = c(N, G, K_merged),
+			   dimnames=list(bulkID, geneID, cellType.merged))
 	
 	#merge across cellType.merged
 	for(k in 1:K_merged){
@@ -118,15 +133,33 @@ mergeK <- function(jointPost.obj,
 			#skipping summation. assign value directly
 			Z[,,cellType.merged.k] <- jointPost.obj@Z[,,cellTypes.k, drop=F]
 			theta[,cellType.merged.k] <- jointPost.obj@theta[,cellTypes.k, drop=F]
+				# copy CVs directly if present
+				if(!is.null(dim(jointPost.obj@Z.cv)))
+					Z.cv[,,cellType.merged.k] <- jointPost.obj@Z.cv[,,cellTypes.k, drop=F]
 		}
 		else {
 			#marginalize cellTypes.k
 			Z[,, cellType.merged.k] <- rowSums(jointPost.obj@Z[,,cellTypes.k, drop=F], dims=2)
 			theta[,cellType.merged.k] <- rowSums(jointPost.obj@theta[,cellTypes.k, drop=F])
+				# merge CVs: convert CV->variance, sum variances (assume independence), then convert back to CV
+				if(!is.null(dim(jointPost.obj@Z.cv))){
+					# jointPost.obj@Z is N x G x K; get the subset for the cellTypes.k
+					Z_means <- jointPost.obj@Z[,,cellTypes.k, drop=F] # N x G x ksub
+					Z_cvs <- jointPost.obj@Z.cv[,,cellTypes.k, drop=F]
+					# compute variances = (cv * mean)^2, sum across ksub
+					var_sum <- apply((Z_cvs * Z_means)^2, c(1,2), sum)
+					mean_sum <- Z[,, cellType.merged.k]
+					# avoid divide by zero
+					cv_merged <- array(NA, dim = dim(mean_sum))
+					zero_mean <- mean_sum == 0
+					cv_merged[!zero_mean] <- sqrt(var_sum[!zero_mean]) / mean_sum[!zero_mean]
+					cv_merged[zero_mean] <- NA
+					Z.cv[,,cellType.merged.k] <- cv_merged
+				}
 		}
 	}
 	 
-	new("jointPost", Z = Z, theta = theta)
+	new("jointPost", Z = Z, Z.cv = Z.cv, theta = theta)
 	
 }
 
