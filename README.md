@@ -1,1 +1,1 @@
-# BayeSamPrism
+# BayesPrismExt

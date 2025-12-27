@@ -372,8 +372,8 @@ run.gibbs.refPhi.ini <- function(gibbsSampler.obj,
 	gibbs.idx <- get.gibbs.idx(gibbs.control)
 	seed <- gibbs.control$seed
 
-	sample.Z.theta_n <- BayeSamPrism:::sample.Z.theta_n
-	rdirichlet <- BayeSamPrism:::rdirichlet
+	sample.Z.theta_n <- BayesPrismExt:::sample.Z.theta_n
+	rdirichlet <- BayesPrismExt:::rdirichlet
 	
 	# Initialize HDF5 if saving chains
 	if(save.chain & !is.null(h5.file)) {
@@ -456,8 +456,8 @@ run.gibbs.refPhi.final <- function(gibbsSampler.obj,
 	gibbs.idx <- get.gibbs.idx(gibbs.control)
 	seed <- gibbs.control$seed
 
-	sample.theta_n <- BayeSamPrism:::sample.theta_n
-	rdirichlet <- BayeSamPrism:::rdirichlet
+	sample.Z.theta_n <- BayesPrismExt:::sample.Z.theta_n
+	rdirichlet <- BayesPrismExt:::rdirichlet
 	
 	cat("Start run... \n")
 	
@@ -518,8 +518,8 @@ run.gibbs.refTumor <- function(gibbsSampler.obj){
 	gibbs.idx <- get.gibbs.idx(gibbs.control)
 	seed <- gibbs.control$seed
 	
-	sample.theta_n <- BayeSamPrism:::sample.theta_n
-	rdirichlet <- BayeSamPrism:::rdirichlet
+	sample.theta_n <- BayesPrismExt:::sample.theta_n
+	rdirichlet <- BayesPrismExt:::rdirichlet
 
 	tmp.dir <- tempdir(check=TRUE)
 	for(n in 1:nrow(psi_mal)) {

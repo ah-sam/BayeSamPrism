@@ -75,9 +75,9 @@ optimize.psi<-function(phi,
 	
 	sfInit(parallel = TRUE, cpus = opt.control$n.cores, type = "SOCK" )
 	opt.control$n.cores <- NULL
-	Rcgminu <- BayeSamPrism::: Rcgminu
-	log.posterior.gamma.grad <- BayeSamPrism::: log.posterior.gamma.grad
-	log.posterior.gamma <- BayeSamPrism::: log.posterior.gamma
+	Rcgminu <- BayesPrismExt::: Rcgminu
+	log.posterior.gamma.grad <- BayesPrismExt::: log.posterior.gamma.grad
+	log.posterior.gamma <- BayesPrismExt::: log.posterior.gamma
 	sfExport("phi", "Z_gt", "Z_t", "prior.num", "opt.control", 
 			 "Rcgminu", "log.posterior.gamma.grad", "log.posterior.gamma")
 

@@ -214,7 +214,7 @@ plot.bulk.vs.sc <- function(sc.input,
 	sc.norm <- norm.to.one (ref = matrix(colSums(sc.input),nrow=1),
 				 			  pseudo.min = 1E-8)[1,]
 	
-	gene.tab.path <- system.file("extdata","gencode.v22.broad.category.txt", package="BayeSamPrism")	
+	gene.tab.path <- system.file("extdata","gencode.v22.broad.category.txt", package="BayesPrismExt")	
 	gene.list <- read.table(gene.tab.path, sep="\t",header=F,stringsAsFactors=F)
 	
 	#decide if emsembl ID or gene symbol is used

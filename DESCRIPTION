@@ -1,7 +1,7 @@
-Package: BayeSamPrism
+Package: BayesPrismExt
 Version: 2.2.2
 Date: 2024-02-20
-Title: BayeSamPrism: Bayesian cell type and gene expression deconvolution 
+Title: BayesPrismExt: Bayesian cell type and gene expression deconvolution 
 Author: Tinyi Chu<tc532@cornell.edu>, Charles G. Danko <dankoc@gmail.com>
 Maintainer: Tinyi Chu<tc532@cornell.edu>
 Depends: R (>= 2.6), snowfall, NMF

@@ -12,8 +12,8 @@ assign.category <- function(input.genes,
 	stopifnot(length(species)==1 & species %in% c("hs","mm"))
 	
 	#load gene list
-	if(species=="hs") gene.list <- read.table(system.file("extdata", "genelist.hs.new.txt", package="BayeSamPrism"),sep="\t",header=F,stringsAsFactors=F)
-	if(species=="mm") gene.list <- read.table(system.file("extdata", "genelist.mm.new.txt", package="BayeSamPrism"),sep="\t",header=F,stringsAsFactors=F)
+	if(species=="hs") gene.list <- read.table(system.file("extdata", "genelist.hs.new.txt", package="BayesPrismExt"),sep="\t",header=F,stringsAsFactors=F)
+	if(species=="mm") gene.list <- read.table(system.file("extdata", "genelist.mm.new.txt", package="BayesPrismExt"),sep="\t",header=F,stringsAsFactors=F)
 	
 	
 	#detect if EMSEMBLE ID (starts with ENS) or gene symbol is used
@@ -126,7 +126,7 @@ select.gene.type <- function(input,
 	
 	input.genes <- colnames(input)
 					 	
-	gene.tab.path <- system.file("extdata","gencode.v22.broad.category.txt", package="BayeSamPrism")	
+	gene.tab.path <- system.file("extdata","gencode.v22.broad.category.txt", package="BayesPrismExt")	
 	gene.list <- read.table(gene.tab.path, sep="\t",header=F,stringsAsFactors=F)
 	
 	#decide if emsembl ID or gene symbol is used
