@@ -393,6 +393,8 @@ run.gibbs.refPhi.ini <- function(gibbsSampler.obj,
 		init.h5.gibbs(h5.file, nrow(X), ncol(phi), nrow(phi),
 		              gibbs.control$chain.length, gibbs.control$burn.in, gibbs.control$thinning,
 		              save.chain=save.chain)
+	}
+	
 	if(gibbs.control$n.cores>1){	
 		#parallel using snowfall	
 		sfInit(parallel = TRUE, cpus = gibbs.control$n.cores, type = "SOCK" )
