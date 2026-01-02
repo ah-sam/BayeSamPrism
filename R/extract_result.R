@@ -18,6 +18,9 @@ get.fraction <- function(bp,
     if(which.theta=="final"){
         if(state.or.type=="state")
             warning("Warning: only cell type is available for updated Gibbs. Returning cell type info.")
+        if(is.null(bp@posterior.theta_f) || is.null(bp@posterior.theta_f@theta)) {
+            stop("Final Gibbs sampling was not run (update.gibbs=FALSE). Use which.theta='first' instead.")
+        }
         return(bp@posterior.theta_f@theta) 
     }
     
@@ -43,6 +46,9 @@ get.fraction.cv <- function(bp,
     if(which.theta=="final"){
         if(state.or.type=="state")
             warning("Warning: only cell type is available for updated Gibbs. Returning cell type info.")
+        if(is.null(bp@posterior.theta_f) || is.null(bp@posterior.theta_f@theta.cv)) {
+            stop("Final Gibbs sampling was not run (update.gibbs=FALSE). Use which.theta='first' instead.")
+        }
         return(bp@posterior.theta_f@theta.cv) 
     }
     
