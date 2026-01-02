@@ -270,8 +270,12 @@ estimate.gibbs.time <- function(gibbsSampler.obj,
 #' @param burn.in burn-in length
 #' @param thinning thinning rate
 #' @param save.chain character, "none", "theta", or "all"
+#' @param sample.names character vector of sample names
+#' @param gene.names character vector of gene names
+#' @param celltype.names character vector of cell type names
 init.h5.gibbs <- function(h5.file, n_samples, n_genes, n_celltypes, 
-                          chain.length, burn.in, thinning, save.chain="all") {
+                          chain.length, burn.in, thinning, save.chain="all",
+                          sample.names=NULL, gene.names=NULL, celltype.names=NULL) {
 	
 	library(rhdf5)
 	
@@ -283,6 +287,22 @@ init.h5.gibbs <- function(h5.file, n_samples, n_genes, n_celltypes,
 	
 	# Create file
 	h5createFile(h5.file)
+	
+	# Store metadata as attributes
+	h5write(data.frame(n_samples=n_samples, n_genes=n_genes, n_celltypes=n_celltypes, 
+	                   n_iterations=n_iterations, save_chain=save.chain),
+	        h5.file, "metadata")
+	
+	# Store dimension names if provided
+	if(!is.null(sample.names)) {
+		h5write(sample.names, h5.file, "sample_names")
+	}
+	if(!is.null(gene.names)) {
+		h5write(gene.names, h5.file, "gene_names")
+	}
+	if(!is.null(celltype.names)) {
+		h5write(celltype.names, h5.file, "celltype_names")
+	}
 	
 	# theta dataset: n_samples x n_iterations x n_celltypes (always created if save.chain != "none")
 	if(save.chain %in% c("theta", "all")) {
@@ -338,18 +358,33 @@ write.chains.to.h5 <- function(gibbs.list, h5.file, sample.names, save.chain="al
 		}
 	}
 	
+	# Update sample names in file (in case they weren't passed to init.h5.gibbs)
+	if(!is.null(sample.names)) {
+		h5write(sample.names, h5.file, "sample_names")
+	}
+	
 	cat("All chains written to:", h5.file, "\n")
 }
 
 
 #' HELPER FUNCTION: Read chain from HDF5
 #' @param h5.file character, path to HDF5 file
-#' @param sample.idx integer, sample index (row number)
+#' @param sample.idx integer or character, sample index (row number) or sample name
 #' @param param character, "theta" or "Z"
 #' @return array of dimension n_iterations x n_celltypes (for theta) or n_iterations x n_genes x n_celltypes (for Z)
 read.h5.chain <- function(h5.file, sample.idx, param = "theta") {
 	library(rhdf5)
 	stopifnot(param %in% c("theta", "Z"))
+	
+	# If sample.idx is character, look up the index
+	if(is.character(sample.idx)) {
+		sample.names <- h5read(h5.file, "sample_names")
+		match.idx <- which(sample.names == sample.idx)
+		if(length(match.idx) == 0) {
+			stop("Sample '", sample.idx, "' not found in HDF5 file")
+		}
+		sample.idx <- match.idx[1]
+	}
 	
 	if(param == "theta") {
 		chain <- h5read(h5.file, "theta", index = list(sample.idx, NULL, NULL))
@@ -392,7 +427,8 @@ run.gibbs.refPhi.ini <- function(gibbsSampler.obj,
 	if(save.chain != "none" & !is.null(h5.file)) {
 		init.h5.gibbs(h5.file, nrow(X), ncol(phi), nrow(phi),
 		              gibbs.control$chain.length, gibbs.control$burn.in, gibbs.control$thinning,
-		              save.chain=save.chain)
+		              save.chain=save.chain, sample.names=rownames(X), gene.names=colnames(X),
+		              celltype.names=rownames(phi))
 	}
 	
 	if(gibbs.control$n.cores>1){	
