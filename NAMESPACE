@@ -1,5 +1,6 @@
 import(snowfall)
 import(gplots)
+import(rhdf5)
 import(BiocParallel)
 import(scran)
 import(stats)
